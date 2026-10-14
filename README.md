@@ -31,17 +31,24 @@ Requirements
 
 Setup
 
+## ESP8266 DNS Ad Blocker — Setup Instructions
+
 1. Connect the ESP8266 to your computer using a compatible USB cable.
 2. Install the Arduino IDE and configure ESP8266 board support.
-3. Open the firmware source code in the Arduino IDE.
-4. Enter your Wi-Fi SSID and password in the configuration section.
-5. Select the correct ESP8266 board and port.
-6. Compile and upload the firmware to the ESP8266.
-7. Find the ESP8266’s IP address using the serial monitor or your router’s connected-device list.
-8. Enter the ESP8266’s IP address in a web browser to access the dashboard.
-9. Configure your device to use the ESP8266’s IP address as its DNS server.
-10. For network-wide filtering, configure your router’s DHCP DNS settings to distribute the ESP8266’s IP address to connected devices.
-11. Test DNS resolution and verify that the configured blocklist is working.
+3. Open the updated firmware source code in the Arduino IDE.
+4. Select the correct ESP8266 board and serial port.
+5. Compile and upload the firmware to the ESP8266.
+6. On your phone or computer, connect to the ESP8266 Wi-Fi network:
+   - **Wi-Fi name:** `pender`
+   - **Password:** `pender1234`
+7. Open a web browser and navigate to `http://192.168.4.1`.
+8. Open the Wi-Fi Setup page and enter your home Wi-Fi SSID and password, then save the settings.
+9. Allow the ESP8266 to connect to your home network. Your router will automatically assign it an IP address using DHCP.
+10. Find the assigned home-network IP address on the dashboard. Connect your device to the same home Wi-Fi network and enter that IP address in your browser to access the dashboard.
+11. Configure your device to use the ESP8266's IP address as its DNS server to test DNS filtering.
+12. For network-wide filtering, configure your router's DHCP DNS settings to distribute the ESP8266's IP address to connected devices, if supported.
+
+**Note:** The ESP8266 must remain powered on for DNS filtering to work.
 
 Limitations
 
