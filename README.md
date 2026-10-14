@@ -60,14 +60,6 @@ Limitations
 * The ESP8266 has limited memory and processing capacity compared with dedicated DNS filtering servers.
 * DNS requests forwarded by the current firmware use standard, unencrypted DNS.
 
-Privacy and Security
-
-Protect your Wi-Fi credentials and avoid exposing the ESP8266 dashboard directly to the public internet.
-
-Use trusted blocklists and remember that DNS logs can reveal information about browsing activity. Consider the privacy implications of the upstream DNS resolver you choose.
-
-Keep the firmware updated and use a reliable power supply to help ensure stable operation.
-
 License
 
 This project is under the “Apache” license…
