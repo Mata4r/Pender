@@ -29,9 +29,8 @@ Requirements
 * Wi-Fi network with internet access
 * ESP8266 board support and the appropriate USB drivers
 
-Setup
 
-## ESP8266 DNS Ad Blocker — Setup Instructions
+## Pender — Setup Instructions
 
 1. Connect the ESP8266 to your computer using a compatible USB cable.
 2. Install the Arduino IDE and configure ESP8266 board support.
