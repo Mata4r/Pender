@@ -1,9 +1,9 @@
 
 <img src="https://i.postimg.cc/wjL2LFkb/image00002.png" width="330">
 
-![Static Badge](https://img.shields.io/badge/esp8266-purple?style=for-the-badge&logo=https%3A%2F%2Fshields.io)
-![Static Badge](https://img.shields.io/badge/Arduino-9295EC?style=for-the-badge&label=IDE&labelColor=purple)
-![Static Badge](https://img.shields.io/badge/Ad%20Blocker-9295EC?style=for-the-badge)
+![Static Badge](https://img.shields.io/badge/esp8266-grey?style=for-the-badge&logo=https%3A%2F%2Fshields.io)
+![Static Badge](https://img.shields.io/badge/Arduino-5B4287?style=for-the-badge&label=IDE&labelColor=grey)
+![Static Badge](https://img.shields.io/badge/Ad%20Blocker-5B4287?style=for-the-badge)
 
 
 
