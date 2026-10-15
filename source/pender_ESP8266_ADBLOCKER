@@ -487,15 +487,37 @@ void pollDns() {
 }
 
 // ---------- Web UI ----------
-// Basic style: background #272C30, accent #397FA9.
+// Basic style: background #272C30, accent purple #5B4285 (matches the logo).
+// Logo: inline SVG witch hat, shown beside the "Pender" heading.
+#define LOGO_SVG \
+  "<svg class='logo' viewBox='0 0 120 90' role='img' aria-label='Pender logo'>" \
+  "<path d='M6 76C4 70 14 66 28 62C40 59 44 56 48 52C54 38 52 24 62 12C68 4 78 4 84 8C92 16 100 20 106 26C100 26 94 30 90 32C84 34 82 40 84 48C86 54 92 58 96 62C104 64 112 68 114 74C116 80 108 84 92 84C60 88 36 88 24 84C12 84 8 80 6 76Z' fill='#5B4285' stroke='#000' stroke-width='3.5' stroke-linejoin='round'/>" \
+  "<path d='M46 54C56 50 76 52 92 58L94 66C80 70 58 70 44 64Z' fill='#000'/>" \
+  "<rect x='50' y='52' width='20' height='20' rx='2' fill='#F79443' stroke='#000' stroke-width='3'/>" \
+  "<rect x='55' y='57' width='10' height='10' rx='1' fill='#000'/>" \
+  "<path d='M62 26L82 14M66 36L78 32' stroke='#000' stroke-width='3' stroke-linecap='round' fill='none'/>" \
+  "</svg>"
+
+// Browser tab / website icon: the same witch hat as an inline data-URI SVG
+// (no extra route or image file needed, and it works before login).
+#define FAVICON_LINK \
+  "<link rel='icon' type='image/svg+xml' href=\"data:image/svg+xml," \
+  "%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 90'%3E" \
+  "%3Cpath d='M6 76C4 70 14 66 28 62C40 59 44 56 48 52C54 38 52 24 62 12C68 4 78 4 84 8C92 16 100 20 106 26C100 26 94 30 90 32C84 34 82 40 84 48C86 54 92 58 96 62C104 64 112 68 114 74C116 80 108 84 92 84C60 88 36 88 24 84C12 84 8 80 6 76Z' fill='%235B4285' stroke='%23000' stroke-width='5' stroke-linejoin='round'/%3E" \
+  "%3Cpath d='M46 54C56 50 76 52 92 58L94 66C80 70 58 70 44 64Z' fill='%23000'/%3E" \
+  "%3Crect x='50' y='52' width='20' height='20' rx='2' fill='%23F79443' stroke='%23000' stroke-width='4'/%3E" \
+  "%3Crect x='55' y='57' width='10' height='10' rx='1' fill='%23000'/%3E" \
+  "%3C/svg%3E\">"
+
 static const char CSS[] PROGMEM =
-  ":root{--bg:#272C30;--accent:#397FA9;--ink:#e8ebed;--muted:#a3adb4;--line:#3c444a;--panel:#2e3438}"
+  ":root{--bg:#272C30;--accent:#5B4285;--accent-text:#a590cf;--ink:#e8ebed;--muted:#a3adb4;--line:#3c444a;--panel:#2e3438}"
   "*{box-sizing:border-box}"
   "body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Arial,Helvetica,sans-serif}"
   ".wrap{max-width:900px;margin:0 auto;padding:20px 14px}"
   "header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:16px}"
-  "h1{font-size:22px;margin:0}h2{font-size:16px;margin:0 0 10px;color:var(--accent)}"
-  "a{color:var(--accent)}p{margin:0 0 10px}"
+  "h1{font-size:22px;margin:0;display:flex;align-items:center;gap:10px}h2{font-size:16px;margin:0 0 10px;color:var(--accent-text)}"
+  ".logo{width:44px;height:auto;flex:none}"
+  "a{color:var(--accent-text)}p{margin:0 0 10px}"
   ".grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}"
   ".box{background:var(--panel);border:1px solid var(--line);padding:12px;margin-bottom:14px}"
   ".grid .box{margin:0}"
@@ -505,7 +527,7 @@ static const char CSS[] PROGMEM =
   "label{font-size:13px;color:var(--muted)}"
   "input[type=text],input[type=password]{width:100%;padding:9px;background:var(--bg);color:var(--ink);border:1px solid var(--line);margin:4px 0 12px;font-size:15px}"
   "button,.btn{background:var(--accent);color:#fff;border:1px solid var(--accent);padding:9px 16px;font-size:15px;cursor:pointer;text-decoration:none;display:inline-block}"
-  ".alt{background:transparent;color:var(--accent)}"
+  ".alt{background:transparent;color:var(--accent-text);border-color:var(--accent)}"
   ".kv{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}"
   ".k{font-size:12px;color:var(--muted)}.v{word-break:break-word}"
   ".leg span{display:inline-block;width:10px;height:10px;margin:0 5px 0 0}.leg{margin-top:6px}"
@@ -521,6 +543,7 @@ void sendHead(const char* title, bool refresh) {
   s.reserve(2400);
   s += F("<!doctype html><html><head><meta charset='utf-8'>"
          "<meta name='viewport' content='width=device-width,initial-scale=1'>");
+  s += F(FAVICON_LINK);
   s += F("<title>");
   s += title;
   s += F("</title><style>");
@@ -662,11 +685,24 @@ void handleDashboard() {
     if (clients[i].used && (uint32_t)(now - clients[i].lastSeen) < 300000UL) activeClients++;
   }
 
-  sendHead("Pender", true);
+  // ?live=1 is the background refresh: send only the changing sections
+  // (no head, CSS, logo, favicon or script), which is much lighter and
+  // lets the page update without reloading.
+  bool live = web.hasArg("live");
+  if (live) {
+    web.setContentLength(CONTENT_LENGTH_UNKNOWN);
+    web.sendHeader("Cache-Control", "no-store");
+    web.send(200, "text/html; charset=utf-8", "");
+  } else {
+    sendHead("Pender", true);
+  }
 
   String s;
   s.reserve(1800);
-  s += F("<header><h1>Pender</h1><nav><a class='btn alt' href='/wifi'>Wi-Fi setup</a> <a class='btn alt' href='/settings'>Password settings</a></nav></header>");
+  if (!live) {
+    s += F("<header><h1>" LOGO_SVG "Pender</h1><nav><a class='btn alt' href='/wifi'>Wi-Fi setup</a> <a class='btn alt' href='/settings'>Password settings</a></nav></header>"
+           "<div id='live'>");
+  }
   s += F("<section class='grid'><div class='box'><div class='m'>DNS requests</div><div class='n'>");
   s += String(totalQueries);
   s += F("</div></div><div class='box'><div class='m'>Blocked locally</div><div class='n'>");
@@ -738,15 +774,25 @@ void handleDashboard() {
          "Dashboard updates automatically every 3 seconds. <span class='live-note'>Live updates enabled</span></p></section>");
   out(s);
 
-  // Refresh dashboard content in the background without navigating/reloading the page.
-  out(F("<script>"
-        "(()=>{let busy=false;setInterval(async()=>{if(busy||document.hidden)return;busy=true;"
-        "try{const r=await fetch('/?live='+Date.now(),{cache:'no-store'});"
-        "if(!r.ok)return;const t=await r.text();const d=new DOMParser().parseFromString(t,'text/html');"
-        "const fresh=d.querySelector('main.wrap'),current=document.querySelector('main.wrap');"
-        "if(fresh&&current){current.innerHTML=fresh.innerHTML;"
-        "const note=current.querySelector('.live-note');if(note)note.textContent='Live - updated '+new Date().toLocaleTimeString();}}"
-        "catch(e){}finally{busy=false;}},3000);})();"
+  if (live) {
+    out(String(""));  // ends the chunked response
+    return;
+  }
+
+  // Refresh only the #live block in the background. Requests are chained
+  // (next one starts after the previous finishes) so they never pile up,
+  // and the DOM is updated on the next animation frame to avoid jank.
+  out(F("</div><script>"
+        "(()=>{const el=document.getElementById('live');"
+        "const tick=async()=>{if(!document.hidden){"
+        "const ac=new AbortController(),to=setTimeout(()=>ac.abort(),5000);"
+        "try{const r=await fetch('/?live=1',{cache:'no-store',signal:ac.signal});"
+        "if(r.ok){const t=await r.text();"
+        "requestAnimationFrame(()=>{el.innerHTML=t;"
+        "const n=el.querySelector('.live-note');if(n)n.textContent='Live - updated '+new Date().toLocaleTimeString();});}}"
+        "catch(e){}finally{clearTimeout(to);}}"
+        "setTimeout(tick,3000);};"
+        "setTimeout(tick,3000);})();"
         "</script>"));
 
   sendFoot();
@@ -798,7 +844,7 @@ void handleSettingsPage() {
                "<section class='box'><h2>Change website login</h2>"
                "<p class='m'>Choose a username and a new password. The change is saved on the ESP8266 and survives restart.</p>"
                "<form method='POST' action='/settings/save'>"
-               "<label for='user'>New username</label><input id='user' name='user' maxlength='32' autocomplete='username' required value='");
+               "<label for='user'>New username</label><input type='text' id='user' name='user' maxlength='32' autocomplete='username' required value='");
   s += esc(String(siteAuth.user));
   s += F("'><label for='pass'>New password (8–63 characters)</label>"
          "<input id='pass' name='pass' type='password' minlength='8' maxlength='63' autocomplete='new-password' required>"
@@ -838,7 +884,9 @@ void sendMessagePage(int code, const char* title, const String& body) {
   String s;
   s.reserve(2400);
   s += F("<!doctype html><html><head><meta charset='utf-8'>"
-         "<meta name='viewport' content='width=device-width,initial-scale=1'><title>");
+         "<meta name='viewport' content='width=device-width,initial-scale=1'>");
+  s += F(FAVICON_LINK);
+  s += F("<title>");
   s += title;
   s += F("</title><style>");
   s += FPSTR(CSS);
@@ -898,6 +946,7 @@ void setup() {
   for (uint8_t i = 0; i < MAX_PENDING; i++) pending[i].used = false;
   bucketStart = millis();
 
+  system_update_cpu_freq(SYS_CPU_160MHZ);  // faster page rendering and DNS handling
   WiFi.persistent(false);
   WiFi.mode(WIFI_AP_STA);
   WiFi.setSleepMode(WIFI_NONE_SLEEP);
@@ -926,6 +975,7 @@ void setup() {
     ESP.restart();
   }
 
+  web.on("/favicon.ico", HTTP_GET, []() { web.send(204); });  // icon comes from the <link> tag
   web.on("/", HTTP_GET, handleDashboard);
   web.on("/wifi", HTTP_GET, handleWifiPage);
   web.on("/settings", HTTP_GET, handleSettingsPage);
