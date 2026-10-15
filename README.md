@@ -1,3 +1,12 @@
+
+<img src="https://i.postimg.cc/wjL2LFkb/image00002.png" width="330">
+
+![Static Badge](https://img.shields.io/badge/esp8266-purple?style=for-the-badge&logo=https%3A%2F%2Fshields.io)
+![Static Badge](https://img.shields.io/badge/Arduino-9295EC?style=for-the-badge&label=IDE&labelColor=purple)
+![Static Badge](https://img.shields.io/badge/Ad%20Blocker-9295EC?style=for-the-badge)
+
+
+
 # Pender — Ad Blocker
 
 A DNS-based ad-blocking project that uses WireGuard to route DNS traffic through the configured network and a blocklist to filter known advertising and tracking domains.
